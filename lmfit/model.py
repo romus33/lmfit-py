@@ -959,7 +959,7 @@ class Model:
     def fit(self, data, params=None, weights=None, method='leastsq',
             iter_cb=None, scale_covar=True, verbose=False, fit_kws=None,
             nan_policy=None, calc_covar=True, max_nfev=None,
-            coerce_farray=True, **kwargs):
+            coerce_farray=True, progress=False, **kwargs):
         """Fit the model to the data using the supplied Parameters.
 
         Parameters
@@ -1100,7 +1100,7 @@ class Model:
                              scale_covar=scale_covar, fcn_kws=kwargs,
                              nan_policy=self.nan_policy, calc_covar=calc_covar,
                              max_nfev=max_nfev, **fit_kws)
-        output.fit(data=data, weights=weights)
+        output.fit(data=data, weights=weights, progress=progress)
         output.components = self.components
         return output
 
@@ -1430,7 +1430,7 @@ class ModelResult(Minimizer):
                            max_nfev=max_nfev, **fit_kws)
 
     def fit(self, data=None, params=None, weights=None, method=None,
-            nan_policy=None, **kwargs):
+            nan_policy=None,progress=False, **kwargs):
         """Re-perform fit for a Model, given data and params.
 
         Parameters
@@ -1464,7 +1464,7 @@ class ModelResult(Minimizer):
         self.userargs = (self.data, self.weights)
         self.userkws.update(kwargs)
         self.init_fit = self.model.eval(params=self.params, **self.userkws)
-        _ret = self.minimize(method=self.method)
+        _ret = self.minimize(method=self.method,progress=progress)
         self.model.post_fit(_ret)
         _ret.params.create_uvars(covar=_ret.covar)
 
